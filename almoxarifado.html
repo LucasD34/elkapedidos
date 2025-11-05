@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Almoxarifado</title>
+<style>
+body { font-family: Arial,sans-serif; background:#f2f2f2; margin:0; padding:0; }
+header { background:#1e3d59; color:white; padding:15px; text-align:center; }
+table { width:100%; border-collapse:collapse; margin-top:15px; background:white; }
+th, td { border:1px solid #ccc; padding:8px; text-align:left; }
+th { background:#eee; }
+input, select, textarea, button { padding:5px; margin-right:10px; }
+textarea { resize: vertical; }
+.btn { background:#1e3d59; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; }
+.btn:hover { background:#2e5b84; }
+.form-linha { margin-bottom:10px; }
+label { font-weight:bold; margin-right:5px; }
+.status-pendente { color:red; font-weight:bold; }
+.status-enviado { color:green; font-weight:bold; }
+.separador { background:#dcdcdc; text-align:center; font-weight:bold; padding:5px; }
+</style>
+</head>
+<body>
+
+<header><h1>Almoxarifado - Registrar Pedidos</h1></header>
+
+<div style="padding:20px;">
+<form id="formAlmoxarifado" onsubmit="enviarPedido(event)">
+<div class="form-linha">
+<label>Encarregada(o):</label>
+<input type="text" id="encarregada" placeholder="Nome da encarregada" required>
+</div>
+<div class="form-linha">
+<label>Referência:</label>
+<input type="text" id="referencia" placeholder="Digite a referência">
+</div>
+<div class="form-linha">
+<label>Material:</label>
+<select id="material" required>
+<option value="">Selecione</option>
+<option value="Abraçadeira">Abraçadeira</option>
+<option value="Blister">Blister</option>
+<option value="Caixa master">Caixa master</option>
+<option value="Cartão">Cartão</option>
+<option value="Cartela">Cartela</option>
+<option value="Cinta vinílica">Cinta vinílica</option>
+<option value="Cordão">Cordão</option>
+<option value="Etiqueta">Etiqueta</option>
+<option value="Faixa">Faixa</option>
+<option value="Módulo som">Módulo som</option>
+<option value="Mola">Mola</option>
+<option value="Outros">Outros</option>
+<option value="Papel gomado">Papel gomado</option>
+<option value="Parafuso">Parafuso</option>
+<option value="Rede">Rede</option>
+<option value="Suporte">Suporte</option>
+<option value="Tinta">Tinta</option>
+<option value="TNT">TNT</option>
+</select>
+</div>
+<div class="form-linha">
+<label>Quantidade:</label>
+<input type="text" id="quantidade" placeholder="Digite a quantidade" required>
+</div>
+<div class="form-linha">
+<label>Observação:</label>
+<textarea id="observacao" rows="2" placeholder="Observações do item"></textarea>
+</div>
+<button type="button" class="btn" onclick="adicionarItem()">Adicionar Item</button>
+<button type="submit" class="btn">Enviar Pedido</button>
+</form>
+
+<h3>Itens do Pedido</h3>
+<table id="listaItens">
+<thead>
+<tr><th>Material</th><th>Referência</th><th>Quantidade</th><th>Observação</th><th>Ação</th></tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<h3>📋 Pedidos Registrados</h3>
+<table id="tabelaPedidos">
+<thead>
+<tr><th>Pedido</th><th>Encarregada</th><th>Material</th><th>Referência</th><th>Qtd</th><th>Observação</th><th>Data</th><th>Status</th></tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCY-4txbL6nXugFoaIqmosdNqF9LTDg3e4",
+  authDomain: "elkapedidos.firebaseapp.com",
+  databaseURL: "https://elkapedidos-default-rtdb.firebaseio.com",
+  projectId: "elkapedidos",
+  storageBucket: "elkapedidos.firebasestorage.app",
+  messagingSenderId: "787077956763",
+  appId: "1:787077956763:web:bc796d2afef94caae6723e",
+  measurementId: "G-FHHX0GH6FT"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+</script>
+
+<script>
+let itensPedido = [];
+
+// Funções do formulário
+function adicionarItem() {
+  const material = document.getElementById('material').value;
+  const referencia = document.getElementById('referencia').value;
+  const quantidade = document.getElementById('quantidade').value;
+  const observacao = document.getElementById('observacao').value;
+  if(!material||!quantidade){alert("Material e quantidade obrigatórios!");return;}
+  itensPedido.push({material, referencia, quantidade, observacao});
+  atualizarListaItens();
+  document.getElementById('material').value="";
+  document.getElementById('referencia').value="";
+  document.getElementById('quantidade').value="";
+  document.getElementById('observacao').value="";
+}
+
+function removerItem(i){itensPedido.splice(i,1);atualizarListaItens();}
+function atualizarListaItens(){
+  const tbody=document.querySelector('#listaItens tbody'); tbody.innerHTML="";
+  itensPedido.forEach((item,i)=>{
+    const row=tbody.insertRow();
+    row.insertCell(0).textContent=item.material;
+    row.insertCell(1).textContent=item.referencia;
+    row.insertCell(2).textContent=item.quantidade;
+    row.insertCell(3).textContent=item.observacao;
+    const btnCell=row.insertCell(4);
+    const btn=document.createElement('button'); btn.textContent="Remover"; btn.className="btn"; btn.onclick=()=>removerItem(i); btnCell.appendChild(btn);
+  });
+}
+
+// Funções Firebase
+async function pegarPedidosFirebase(){
+  const snapshot = await db.ref('pedidos').get();
+  return snapshot.exists() ? Object.values(snapshot.val()) : [];
+}
+
+function salvarPedidosFirebase(pedidos){
+  db.ref('pedidos').set(pedidos);
+}
+
+async function enviarPedido(e){
+  e.preventDefault();
+  const encarregada = document.getElementById('encarregada').value;
+  if(itensPedido.length===0){alert("Adicione pelo menos um item!");return;}
+  let pedidos = await pegarPedidosFirebase();
+  const data = new Date().toLocaleString('pt-BR');
+  let maxNumero = pedidos.length>0?Math.max(...pedidos.map(p=>p.numero)):0;
+  itensPedido.forEach(item=>{
+    maxNumero++;
+    pedidos.push({
+      id:Date.now().toString()+Math.random().toString(16),
+      numero:maxNumero,
+      encarregada,
+      material:item.material,
+      referencia:item.referencia,
+      quantidade:item.quantidade,
+      observacao:item.observacao,
+      data,
+      status:"Pendente",
+      dataEnvio:""
+    });
+  });
+  salvarPedidosFirebase(pedidos);
+  itensPedido=[]; atualizarListaItens(); document.getElementById('formAlmoxarifado').reset();
+  alert("✅ Pedido enviado!");
+}
+
+// Carregar e exibir pedidos
+async function carregarPedidos(){
+  const tabela = document.querySelector('#tabelaPedidos tbody');
+  tabela.innerHTML="";
+  let pedidos = await pegarPedidosFirebase();
+  pedidos = pedidos.slice().reverse();
+  const pendentes = pedidos.filter(p=>p.status==="Pendente");
+  const enviados = pedidos.filter(p=>p.status==="Enviado");
+
+  if(pendentes.length>0){
+    const sep=tabela.insertRow(); const td=sep.insertCell(); td.colSpan=8; td.className='separador';
+    td.textContent=`📦 Pendentes (${pendentes.length})`;
+    pendentes.forEach(p=>{
+      const linha=tabela.insertRow();
+      linha.insertCell(0).textContent=p.numero;
+      linha.insertCell(1).textContent=p.encarregada;
+      linha.insertCell(2).textContent=p.material;
+      linha.insertCell(3).textContent=p.referencia;
+      linha.insertCell(4).textContent=p.quantidade;
+      linha.insertCell(5).textContent=p.observacao;
+      linha.insertCell(6).textContent=p.data;
+      const st=linha.insertCell(7); st.textContent=p.status; st.className="status-pendente";
+    });
+  }
+
+  if(enviados.length>0){
+    const sep=tabela.insertRow(); const td=sep.insertCell(); td.colSpan=8; td.className='separador';
+    td.textContent=`✅ Enviados (${enviados.length})`;
+    enviados.forEach(p=>{
+      const linha=tabela.insertRow();
+      linha.insertCell(0).textContent=p.numero;
+      linha.insertCell(1).textContent=p.encarregada;
+      linha.insertCell(2).textContent=p.material;
+      linha.insertCell(3).textContent=p.referencia;
+      linha.insertCell(4).textContent=p.quantidade;
+      linha.insertCell(5).textContent=p.observacao;
+      linha.insertCell(6).textContent=p.data;
+      const st=linha.insertCell(7); st.textContent=p.status; st.className="status-enviado";
+    });
+  }
+}
+
+// Atualização automática em tempo real
+db.ref('pedidos').on('value', carregarPedidos);
+
+window.onload = carregarPedidos;
+</script>
+
+</body>
+</html>
+
