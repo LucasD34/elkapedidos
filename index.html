@@ -147,6 +147,9 @@ async function carregarPedidos(){
   }
 
   if(enviados.length > 0){
+   const jaTemEnviados = Array.from(tabela.querySelectorAll(".separador"))
+    .some(el => el.textContent.includes("Enviados"));
+  if (!jaTemEnviados) {
     const sep = tabela.insertRow(); 
     const td = sep.insertCell(); 
     td.colSpan = 10; 
