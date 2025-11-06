@@ -4,6 +4,25 @@
 <meta charset="UTF-8">
 <title>Elka 2 - Controle de Pedidos</title>
 <style>
+.logo-container {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+}
+
+.logo-elka {
+  width: 90px;
+  height: auto;
+  opacity: 0.95;
+  transition: transform 0.3s ease;
+}
+
+.logo-elka:hover {
+  transform: scale(1.05);
+  opacity: 1;
+}
+
 body { font-family: Arial,sans-serif; background:#f2f2f2; margin:0; padding:0; }
 header { background:#1e3d59; color:white; padding:15px; text-align:center; }
 table { width:100%; border-collapse:collapse; margin-top:15px; background:white; }
@@ -20,6 +39,10 @@ button:hover{background:#2e5b84;}
 </style>
 </head>
 <body>
+<!-- Logo Elka -->
+<div class="logo-container">
+  <img src="images/elka_logo.png" alt="Logo Elka" class="logo-elka">
+</div>
 
 <header><h1>Elka 2 - Envio de Pedidos</h1></header>
 <div style="padding:20px;">
