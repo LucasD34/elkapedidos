@@ -107,72 +107,84 @@ function salvarPedidosFirebase(pedidos){
 }
 
 // Carregar pedidos na tabela e tocar som para novos pendentes
-async function carregarPedidos(){
-  const tabela = document.querySelector('#tabelaElka tbody'); 
+async function carregarPedidos() {
+  const tabela = document.querySelector('#tabelaElka tbody');
   tabela.innerHTML = "";
   let pedidos = await pegarPedidosFirebase();
   pedidos = pedidos.slice().reverse();
 
-  const pendentes = pedidos.filter(p => p.status==='Pendente');
-  const enviados = pedidos.filter(p => p.status==='Enviado');
+  const pendentes = pedidos.filter(p => p.status === 'Pendente');
+  const enviados = pedidos.filter(p => p.status === 'Enviado');
 
-  // Tocar som se houver novos pedidos pendentes
+  // --- Som de notificação ---
   if (pendentes.length > pedidosPendentesAnteriores.length) {
     document.getElementById('somNotificacao').play();
   }
   pedidosPendentesAnteriores = pendentes.slice(); // atualiza controle
 
-  if(pendentes.length > 0){
-    const sep = tabela.insertRow(); 
-    const td = sep.insertCell(); 
-    td.colSpan = 10; 
-    td.className = 'separador'; 
+  // --- BLOCO PENDENTES ---
+  if (pendentes.length > 0) {
+    const sep = tabela.insertRow();
+    const td = sep.insertCell();
+    td.colSpan = 10;
+    td.className = 'separador';
     td.textContent = `📦 Pendentes (${pendentes.length})`;
 
     pendentes.forEach(item => {
       const linha = tabela.insertRow();
       linha.innerHTML = `
-<td>${item.numero}</td>
-<td>${item.encarregada}</td>
-<td>${item.material}</td>
-<td>${item.referencia}</td>
-<td>${item.quantidade}</td>
-<td><input type="text" class="input-observacao" value="${item.observacao || ''}" id="obs-${item.numero}-${item.id}"></td>
-<td>${item.data}</td>
-<td class="status-pendente">${item.status}</td>
-<td>${item.dataEnvio||'-'}</td>
-<td><button onclick="marcarComoEnviado('${item.id}')">Enviar</button></td>
-`;
+        <td>${item.numero}</td>
+        <td>${item.encarregada}</td>
+        <td>${item.material}</td>
+        <td>${item.referencia}</td>
+        <td>${item.quantidade}</td>
+        <td>
+          <input type="text" class="input-observacao" 
+                 value="${item.observacao || ''}" 
+                 id="obs-${item.numero}-${item.id}">
+        </td>
+        <td>${item.data}</td>
+        <td class="status-pendente">${item.status}</td>
+        <td>${item.dataEnvio || '-'}</td>
+        <td><button onclick="marcarComoEnviado('${item.id}')">Enviar</button></td>
+      `;
     });
   }
 
-  if(enviados.length > 0){
-   const jaTemEnviados = Array.from(tabela.querySelectorAll(".separador"))
-    .some(el => el.textContent.includes("Enviados"));
-  if (!jaTemEnviados) {
-    const sep = tabela.insertRow(); 
-    const td = sep.insertCell(); 
-    td.colSpan = 10; 
-    td.className = 'separador'; 
+  // --- BLOCO ENVIADOS ---
+  if (enviados.length > 0) {
+    // Limpa qualquer duplicado antes
+    const separadoresExistentes = tabela.querySelectorAll(".separador");
+    separadoresExistentes.forEach(s => {
+      if (s.textContent.includes("Enviados")) s.parentElement.remove();
+    });
+
+    // Cria o cabeçalho dos enviados
+    const sep = tabela.insertRow();
+    const td = sep.insertCell();
+    td.colSpan = 10;
+    td.className = 'separador';
     td.textContent = `✅ Enviados (${enviados.length})`;
 
+    // Lista os enviados
     enviados.forEach(item => {
       const linha = tabela.insertRow();
       linha.innerHTML = `
-<td>${item.numero}</td>
-<td>${item.encarregada}</td>
-<td>${item.material}</td>
-<td>${item.referencia}</td>
-<td>${item.quantidade}</td>
-<td>${item.observacao}</td>
-<td>${item.data}</td>
-<td class="status-enviado">${item.status}</td>
-<td>${item.dataEnvio||'-'}</td>
-<td>-</td>
-`;
+        <td>${item.numero}</td>
+        <td>${item.encarregada}</td>
+        <td>${item.material}</td>
+        <td>${item.referencia}</td>
+        <td>${item.quantidade}</td>
+        <td>${item.observacao}</td>
+        <td>${item.data}</td>
+        <td class="status-enviado">${item.status}</td>
+        <td>${item.dataEnvio || '-'}</td>
+        <td>-</td>
+      `;
     });
   }
 }
+
 
 // Marcar pedido como enviado
 async function marcarComoEnviado(id){
