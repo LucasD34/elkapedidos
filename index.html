@@ -4,220 +4,231 @@
 <meta charset="UTF-8">
 <title>Elka 2 - Controle de Pedidos</title>
 <style>
-
+  /* ====== LOGO ====== */
+  .logo-container {
+    /* contêiner simples para alinhar a imagem */
+    margin: 0;
+    padding: 0;
+  }
   .logo-elka {
-    position: relative; /* faz rolar junto */
-    top: 15px;
-    left: 15px;
-    width: 100px; /* ajusta o tamanho se quiser */
+    position: relative; /* rola junto com a página */
+    top: 10px;
+    left: 10px;
+    width: 120px;
     height: auto;
-    z-index: 1000; /* garante que fica por cima */
+    z-index: 999;
+    display: block;
+    margin-left: 10px;
+    margin-top: 10px;
   }
 
-
-
-body { font-family: Arial,sans-serif; background:#f2f2f2; margin:0; padding:0; }
-header { background:#1e3d59; color:white; padding:15px; text-align:center; }
-table { width:100%; border-collapse:collapse; margin-top:15px; background:white; }
-th, td { border:1px solid #ccc; padding:8px; text-align:left; }
-th { background:#eee; }
-button { background:#1e3d59; color:white; border:none; padding:6px 12px; border-radius:5px; cursor:pointer; }
-button:hover{background:#2e5b84;}
-.status-pendente{color:red;font-weight:bold;}
-.status-enviado{color:green;font-weight:bold;}
-.separador{background:#dcdcdc;text-align:center;font-weight:bold;padding:5px;}
-.input-observacao{width:90%;}
-.btn { background:#1e3d59; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; margin-bottom:10px; }
-.btn:hover{background:#2e5b84;}
+  /* ====== LAYOUT ====== */
+  body { font-family: Arial,sans-serif; background:#f2f2f2; margin:0; padding:0; }
+  header { background:#1e3d59; color:white; padding:15px; text-align:center; }
+  table { width:100%; border-collapse:collapse; margin-top:15px; background:white; }
+  th, td { border:1px solid #ccc; padding:8px; text-align:left; }
+  th { background:#eee; }
+  button { background:#1e3d59; color:white; border:none; padding:6px 12px; border-radius:5px; cursor:pointer; }
+  button:hover{background:#2e5b84;}
+  .status-pendente{color:red;font-weight:bold;}
+  .status-enviado{color:green;font-weight:bold;}
+  .separador{background:#dcdcdc;text-align:center;font-weight:bold;padding:5px;}
+  .input-observacao{width:90%;}
+  .btn { background:#1e3d59; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; margin-bottom:10px; }
+  .btn:hover{background:#2e5b84;}
 </style>
 </head>
 <body>
-<!-- Logo Elka -->
-<div class="logo-container">
-  <img src="logo-elka.png" alt="Logo Elka" class="logo-elka" 
-style="position: relative; top: 10px; left: 10px; width: 120px; height: auto; z-index: 999;">
+  <!-- Logo Elka (rola junto com a página) -->
+  <div class="logo-container">
+    <img src="logo-elka.png" alt="Logo Elka" class="logo-elka">
+  </div>
 
-</div>
+  <header><h1>Elka 2 - Envio de Pedidos</h1></header>
 
-<header><h1>Elka 2 - Envio de Pedidos</h1></header>
-<div style="padding:20px;">
-  
-  <button class="btn" onclick="limparPedidos()">🧹 Limpar Todos os Pedidos</button>
+  <div style="padding:20px;">
+    <button class="btn" onclick="limparPedidos()">🧹 Limpar Todos os Pedidos</button>
 
-  <table id="tabelaElka">
-    <thead>
-      <tr>
-        <th>Pedido</th>
-        <th>Encarregada</th>
-        <th>Material</th>
-        <th>Referência</th>
-        <th>Qtd</th>
-        <th>Observação</th>
-        <th>Data Pedido</th>
-        <th>Status</th>
-        <th>Data Envio</th>
-        <th>Ação</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</div>
+    <table id="tabelaElka">
+      <thead>
+        <tr>
+          <th>Pedido</th>
+          <th>Encarregada</th>
+          <th>Material</th>
+          <th>Referência</th>
+          <th>Qtd</th>
+          <th>Observação</th>
+          <th>Data Pedido</th>
+          <th>Status</th>
+          <th>Data Envio</th>
+          <th>Ação</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
-<!-- Som de notificação -->
-<audio id="somNotificacao" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" preload="auto"></audio>
+  <!-- Som de notificação -->
+  <audio id="somNotificacao" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" preload="auto"></audio>
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyCY-4txbL6nXugFoaIqmosdNqF9LTDg3e4",
-  authDomain: "elkapedidos.firebaseapp.com",
-  databaseURL: "https://elkapedidos-default-rtdb.firebaseio.com",
-  projectId: "elkapedidos",
-  storageBucket: "elkapedidos.firebasestorage.app",
-  messagingSenderId: "787077956763",
-  appId: "1:787077956763:web:bc796d2afef94caae6723e",
-  measurementId: "G-FHHX0GH6FT"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-</script>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCY-4txbL6nXugFoaIqmosdNqF9LTDg3e4",
+    authDomain: "elkapedidos.firebaseapp.com",
+    databaseURL: "https://elkapedidos-default-rtdb.firebaseio.com",
+    projectId: "elkapedidos",
+    storageBucket: "elkapedidos.firebasestorage.app",
+    messagingSenderId: "787077956763",
+    appId: "1:787077956763:web:bc796d2afef94caae6723e",
+    measurementId: "G-FHHX0GH6FT"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  </script>
 
-<script>
-// Variável para controlar pedidos pendentes anteriores
-let pedidosPendentesAnteriores = [];
+  <script>
+  // Variável para controlar pedidos pendentes anteriores
+  let pedidosPendentesAnteriores = [];
 
-// Pegar pedidos do Firebase
-async function pegarPedidosFirebase(){
-  const snapshot = await db.ref('pedidos').get();
-  return snapshot.exists() ? Object.values(snapshot.val()) : [];
-}
-
-// Salvar pedidos no Firebase
-function salvarPedidosFirebase(pedidos){
-  db.ref('pedidos').set(pedidos);
-}
-
-// Carregar pedidos na tabela e tocar som para novos pendentes
-async function carregarPedidos() {
-  const tabela = document.querySelector('#tabelaElka tbody');
-  tabela.innerHTML = "";
-  let pedidos = await pegarPedidosFirebase();
-  pedidos = pedidos.slice().reverse();
-
-  const pendentes = pedidos.filter(p => p.status === 'Pendente');
-  const enviados = pedidos.filter(p => p.status === 'Enviado');
-
-  // --- Som de notificação ---
-  if (pendentes.length > pedidosPendentesAnteriores.length) {
-    document.getElementById('somNotificacao').play();
-  }
-  pedidosPendentesAnteriores = pendentes.slice(); // atualiza controle
-
-  // --- BLOCO PENDENTES ---
-  if (pendentes.length > 0) {
-    const sep = tabela.insertRow();
-    const td = sep.insertCell();
-    td.colSpan = 10;
-    td.className = 'separador';
-    td.textContent = `📦 Pendentes (${pendentes.length})`;
-
-    pendentes.forEach(item => {
-      const linha = tabela.insertRow();
-      linha.innerHTML = `
-        <td>${item.numero}</td>
-        <td>${item.encarregada}</td>
-        <td>${item.material}</td>
-        <td>${item.referencia}</td>
-        <td>${item.quantidade}</td>
-        <td>
-          <input type="text" class="input-observacao" 
-                 value="${item.observacao || ''}" 
-                 id="obs-${item.numero}-${item.id}">
-        </td>
-        <td>${item.data}</td>
-        <td class="status-pendente">${item.status}</td>
-        <td>${item.dataEnvio || '-'}</td>
-        <td><button onclick="marcarComoEnviado('${item.id}')">Enviar</button></td>
-      `;
-    });
+  // Pegar pedidos do Firebase
+  async function pegarPedidosFirebase(){
+    const snapshot = await db.ref('pedidos').get();
+    return snapshot.exists() ? Object.values(snapshot.val()) : [];
   }
 
-  // --- BLOCO ENVIADOS ---
-  if (enviados.length > 0) {
-    // Limpa qualquer duplicado antes
-    const separadoresExistentes = tabela.querySelectorAll(".separador");
-    separadoresExistentes.forEach(s => {
-      if (s.textContent.includes("Enviados")) s.parentElement.remove();
-    });
-
-    // Cria o cabeçalho dos enviados
-    const sep = tabela.insertRow();
-    const td = sep.insertCell();
-    td.colSpan = 10;
-    td.className = 'separador';
-    td.textContent = `✅ Enviados (${enviados.length})`;
-
-    // Lista os enviados
-    enviados.forEach(item => {
-      const linha = tabela.insertRow();
-      linha.innerHTML = `
-        <td>${item.numero}</td>
-        <td>${item.encarregada}</td>
-        <td>${item.material}</td>
-        <td>${item.referencia}</td>
-        <td>${item.quantidade}</td>
-        <td>${item.observacao}</td>
-        <td>${item.data}</td>
-        <td class="status-enviado">${item.status}</td>
-        <td>${item.dataEnvio || '-'}</td>
-        <td>-</td>
-      `;
-    });
+  // Salvar pedidos no Firebase
+  function salvarPedidosFirebase(pedidos){
+    db.ref('pedidos').set(pedidos);
   }
-}
 
+  // Carregar pedidos na tabela e tocar som para novos pendentes
+  async function carregarPedidos() {
+    const tabela = document.querySelector('#tabelaElka tbody');
+    tabela.innerHTML = "";
+    let pedidos = await pegarPedidosFirebase();
+    pedidos = pedidos.slice().reverse();
 
-// Marcar pedido como enviado
-async function marcarComoEnviado(id){
-  let pedidos = await pegarPedidosFirebase();
-  const dataEnvio = new Date().toLocaleString('pt-BR');
-  let alterou = false;
+    const pendentes = pedidos.filter(p => p.status === 'Pendente');
+    const enviados = pedidos.filter(p => p.status === 'Enviado');
 
-  pedidos = pedidos.map(p => {
-    if(p.id === id && p.status === 'Pendente'){
-      const obsInput = document.getElementById(`obs-${p.numero}-${p.id}`);
-      if(obsInput) p.observacao = obsInput.value;
-      p.status = 'Enviado';
-      p.dataEnvio = dataEnvio;
-      alterou = true;
+    // --- Som de notificação ---
+    if (pendentes.length > pedidosPendentesAnteriores.length) {
+      const audio = document.getElementById('somNotificacao');
+      if (audio) {
+        // tenta tocar (browsers podem bloquear som sem interação)
+        audio.currentTime = 0;
+        audio.play().catch(()=>{/* ignore bloqueio de autoplay */});
+      }
     }
-    return p;
-  });
+    pedidosPendentesAnteriores = pendentes.slice(); // atualiza controle
 
-  if(alterou){
-    salvarPedidosFirebase(pedidos);
-    alert(`✅ Pedido enviado às ${dataEnvio}`);
-  } else {
-    alert("⚠️ Esse pedido já foi enviado.");
+    // --- BLOCO PENDENTES ---
+    if (pendentes.length > 0) {
+      const sep = tabela.insertRow();
+      const td = sep.insertCell();
+      td.colSpan = 10;
+      td.className = 'separador';
+      td.textContent = `📦 Pendentes (${pendentes.length})`;
+
+      pendentes.forEach(item => {
+        const linha = tabela.insertRow();
+        linha.innerHTML = `
+          <td>${item.numero}</td>
+          <td>${item.encarregada}</td>
+          <td>${item.material}</td>
+          <td>${item.referencia}</td>
+          <td>${item.quantidade}</td>
+          <td>
+            <input type="text" class="input-observacao" 
+                   value="${item.observacao || ''}" 
+                   id="obs-${item.numero}-${item.id}">
+          </td>
+          <td>${item.data}</td>
+          <td class="status-pendente">${item.status}</td>
+          <td>${item.dataEnvio || '-'}</td>
+          <td><button onclick="marcarComoEnviado('${item.id}')">Enviar</button></td>
+        `;
+      });
+    }
+
+    // --- BLOCO ENVIADOS ---
+    if (enviados.length > 0) {
+      // Remove separadores "Enviados" antigos (se houver)
+      const separadoresExistentes = tabela.querySelectorAll(".separador");
+      separadoresExistentes.forEach(s => {
+        if (s.textContent.includes("Enviados")) {
+          // s é a <td>, remove a linha (<tr>)
+          const tr = s.closest('tr');
+          if (tr) tr.remove();
+        }
+      });
+
+      // Cria o cabeçalho dos enviados
+      const sep = tabela.insertRow();
+      const td = sep.insertCell();
+      td.colSpan = 10;
+      td.className = 'separador';
+      td.textContent = `✅ Enviados (${enviados.length})`;
+
+      // Lista os enviados
+      enviados.forEach(item => {
+        const linha = tabela.insertRow();
+        linha.innerHTML = `
+          <td>${item.numero}</td>
+          <td>${item.encarregada}</td>
+          <td>${item.material}</td>
+          <td>${item.referencia}</td>
+          <td>${item.quantidade}</td>
+          <td>${item.observacao}</td>
+          <td>${item.data}</td>
+          <td class="status-enviado">${item.status}</td>
+          <td>${item.dataEnvio || '-'}</td>
+          <td>-</td>
+        `;
+      });
+    }
   }
-}
 
-// Limpar todos os pedidos
-function limparPedidos(){
-  if(!confirm("Tem certeza que deseja remover todos os pedidos da Elka 2?")) return;
-  db.ref('pedidos').remove();
-  alert("🗑️ Todos os pedidos foram removidos!");
-}
+  // Marcar pedido como enviado
+  async function marcarComoEnviado(id){
+    let pedidos = await pegarPedidosFirebase();
+    const dataEnvio = new Date().toLocaleString('pt-BR');
+    let alterou = false;
 
-// Atualização em tempo real com som de novos pendentes
-db.ref('pedidos').on('value', carregarPedidos);
+    pedidos = pedidos.map(p => {
+      if(p.id === id && p.status === 'Pendente'){
+        const obsInput = document.getElementById(`obs-${p.numero}-${p.id}`);
+        if(obsInput) p.observacao = obsInput.value;
+        p.status = 'Enviado';
+        p.dataEnvio = dataEnvio;
+        alterou = true;
+      }
+      return p;
+    });
 
-window.onload = carregarPedidos;
-</script>
+    if(alterou){
+      salvarPedidosFirebase(pedidos);
+      alert(`✅ Pedido enviado às ${dataEnvio}`);
+    } else {
+      alert("⚠️ Esse pedido já foi enviado.");
+    }
+  }
+
+  // Limpar todos os pedidos
+  function limparPedidos(){
+    if(!confirm("Tem certeza que deseja remover todos os pedidos da Elka 2?")) return;
+    db.ref('pedidos').remove();
+    alert("🗑️ Todos os pedidos foram removidos!");
+  }
+
+  // Atualização em tempo real com som de novos pendentes
+  db.ref('pedidos').on('value', carregarPedidos);
+
+  window.onload = carregarPedidos;
+  </script>
 
 </body>
 </html>
-
-
