@@ -19,13 +19,13 @@ label { font-weight:bold; margin-right:5px; }
 .status-enviado { color:green; font-weight:bold; }
 .separador { background:#dcdcdc; text-align:center; font-weight:bold; padding:5px; }
 .logo-container {
-  width: 100%
+  width: 100%;
   justify-content: flex-start;/* ou center se quiser centralizar tudo*/
   display: flex;
   align-items: center;
   gap: 50px; /* espaço entre as imagens */
   margin: 10px 15px;
-  background-color: #ffffff /*fundo branco puro*/
+  background-color: #ffffff; /*fundo branco puro*/
   margin: 10px;
 }
 
@@ -34,7 +34,90 @@ label { font-weight:bold; margin-right:5px; }
   width: auto;
   border-radius: 8px; /* opcional: cantos levemente arredondados */
 }
+/* Responsividade geral */
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
 
+  header, .header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .logo-container {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .logo-elka {
+    width: 80px;
+    margin: 5px;
+  }
+
+  .table-container, table {
+    width: 100%;
+    overflow-x: auto;
+    display: block;
+  }
+
+  th, td {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  button, .btn {
+    width: 100%;
+    margin: 5px 0;
+  }
+
+  .input-observacao {
+    width: 100%;
+  }
+}
+
+/* ====== RESPONSIVIDADE ====== */
+@media (max-width: 768px) {
+  .logo-container {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .logo-container img {
+    height: 70px;
+  }
+
+  table, th, td {
+    font-size: 12px;
+    padding: 5px;
+  }
+
+  header h1 {
+    font-size: 18px;
+  }
+
+  button {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-container img {
+    height: 50px;
+  }
+
+  header h1 {
+    font-size: 16px;
+  }
+
+  .input-observacao {
+    width: 100%;
+    font-size: 12px;
+  }
+}
 
 
 </style>
