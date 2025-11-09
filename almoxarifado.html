@@ -297,7 +297,7 @@ async function carregarPedidos() {
       linha.insertCell(2).textContent = p.material;
       linha.insertCell(3).textContent = p.referencia;
       linha.insertCell(4).textContent = p.quantidade;
-      linha.insertCell(5).innerHTML = `<span style="color:#b30000; font-weight:bold;">${p.observacao || ''}</span>`;
+      linha.insertCell(5).innerHTML = `<span style="color:green; font-weight:bold;">${p.observacao || ''}</span>`;
       linha.insertCell(6).textContent = p.data;
       const st = linha.insertCell(7);
       st.textContent = p.status;
