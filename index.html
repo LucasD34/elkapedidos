@@ -6,24 +6,24 @@
 <style>
   /* ====== LOGO ====== */
   .logo-container {
-    /* contêiner simples para alinhar a imagem */
-    margin: 0;
-    padding: 0;
-  }
-  .logo-elka {
-    position: relative; /* rola junto com a página */
-    top: 10px;
-    left: 10px;
-    width: 120px;
-    height: auto;
-    z-index: 999;
-    display: block;
-    margin-left: 10px;
-    margin-top: 10px;
-  }
+  width: 100%
+  justify-content: flex-start;/* ou center se quiser centralizar tudo*/
+  display: flex;
+  align-items: center;
+  gap: 50px; /* espaço entre as imagens */
+  margin: 10px 15px;
+  background-color: #ffffff /*fundo branco puro*/
+  margin: 10px;
+}
+
+.logo-container img {
+  height: 100px; /* ajusta o tamanho igual pra todas */
+  width: auto;
+  border-radius: 8px; /* opcional: cantos levemente arredondados */
+}
 
   /* ====== LAYOUT ====== */
-  body { font-family: Arial,sans-serif; background:#f2f2f2; margin:0; padding:0; }
+  body { font-family: Arial,sans-serif; background:#ffffff; margin:0; padding:0; }
   header { background:#1e3d59; color:white; padding:15px; text-align:center; }
   table { width:100%; border-collapse:collapse; margin-top:15px; background:white; }
   th, td { border:1px solid #ccc; padding:8px; text-align:left; }
@@ -33,17 +33,38 @@
   .status-pendente{color:red;font-weight:bold;}
   .status-enviado{color:green;font-weight:bold;}
   .separador{background:#dcdcdc;text-align:center;font-weight:bold;padding:5px;}
-  .input-observacao{width:90%;}
-  .btn { background:#1e3d59; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; margin-bottom:10px; }
-  .btn:hover{background:#2e5b84;}
+  .input-observacao {
+  width: 90%;
+  color: #0033cc; /* azul forte no texto */
+  font-weight: bold;
+  background-color: #e6ecff; /* fundo rosado leve */
+  border: 1px solid #3366ff;
+  border-radius: 4px;
+  padding: 4px;
+}
+.input-observacao:focus {
+  outline: none;
+  border-color: #ff0000;
+  box-shadow: 0 0 5px #ff6666;
+}
+
 </style>
 </head>
 <body>
-  <!-- Logo Elka (rola junto com a página) -->
-  <div class="logo-container">
-    <img src="logo-elka.png" alt="Logo Elka" class="logo-elka">
-  </div>
-
+  <!-- Logo Elka -->
+ <div class="logo-container">
+  <img src="logo-elka.png" alt="Logo Elka" class="logo-elka">
+  <img src="caca.png" alt="Brinquedo Cacá" class="logo-extra">
+  <img src="dino.png" alt="Brinquedo Dino" class="logo-extra">
+  <img src="bibi.png" alt="brinquedo bibi" class="logo-extra">
+  <img src="pinos.png" alt="brinquedo pinos" class="logo-extra">
+  <img src="stitch.png" alt="brinquedo stitch" class="logo-extra">
+  <img src="angel.png" alt="brinquedo angel" class="logo-extra">
+  <img src="roby.png" alt="brinquedo roby" class="logo-extra"> 
+  <img src="zoom.png" alt="brinquedo zoom" class="logo-extra">  
+<!-- pode adicionar mais imagens abaixo -->
+  <!-- <img src="outra.png" alt="Outro brinquedo" class="logo-extra"> -->
+</div>
   <header><h1>Elka 2 - Envio de Pedidos</h1></header>
 
   <div style="padding:20px;">
@@ -90,40 +111,43 @@
   </script>
 
   <script>
-  // Variável para controlar pedidos pendentes anteriores
+  // Controla pedidos antigos pra evitar duplicidade
   let pedidosPendentesAnteriores = [];
+  let ultimaRenderizacao = "";
 
-  // Pegar pedidos do Firebase
   async function pegarPedidosFirebase(){
     const snapshot = await db.ref('pedidos').get();
     return snapshot.exists() ? Object.values(snapshot.val()) : [];
   }
 
-  // Salvar pedidos no Firebase
   function salvarPedidosFirebase(pedidos){
     db.ref('pedidos').set(pedidos);
   }
 
-  // Carregar pedidos na tabela e tocar som para novos pendentes
   async function carregarPedidos() {
     const tabela = document.querySelector('#tabelaElka tbody');
-    tabela.innerHTML = "";
     let pedidos = await pegarPedidosFirebase();
+
+    // Converte pra JSON pra comparar com a última renderização e evitar duplicar
+    const jsonAtual = JSON.stringify(pedidos);
+    if (jsonAtual === ultimaRenderizacao) return;
+    ultimaRenderizacao = jsonAtual;
+
+    tabela.innerHTML = "";
     pedidos = pedidos.slice().reverse();
 
     const pendentes = pedidos.filter(p => p.status === 'Pendente');
     const enviados = pedidos.filter(p => p.status === 'Enviado');
 
-    // --- Som de notificação ---
+    // Som de novos pedidos
     if (pendentes.length > pedidosPendentesAnteriores.length) {
       const audio = document.getElementById('somNotificacao');
       if (audio) {
-        // tenta tocar (browsers podem bloquear som sem interação)
         audio.currentTime = 0;
-        audio.play().catch(()=>{/* ignore bloqueio de autoplay */});
+        audio.play().catch(()=>{});
       }
     }
-    pedidosPendentesAnteriores = pendentes.slice(); // atualiza controle
+    pedidosPendentesAnteriores = pendentes.slice();
 
     // --- BLOCO PENDENTES ---
     if (pendentes.length > 0) {
@@ -156,24 +180,12 @@
 
     // --- BLOCO ENVIADOS ---
     if (enviados.length > 0) {
-      // Remove separadores "Enviados" antigos (se houver)
-      const separadoresExistentes = tabela.querySelectorAll(".separador");
-      separadoresExistentes.forEach(s => {
-        if (s.textContent.includes("Enviados")) {
-          // s é a <td>, remove a linha (<tr>)
-          const tr = s.closest('tr');
-          if (tr) tr.remove();
-        }
-      });
-
-      // Cria o cabeçalho dos enviados
       const sep = tabela.insertRow();
       const td = sep.insertCell();
       td.colSpan = 10;
       td.className = 'separador';
       td.textContent = `✅ Enviados (${enviados.length})`;
 
-      // Lista os enviados
       enviados.forEach(item => {
         const linha = tabela.insertRow();
         linha.innerHTML = `
@@ -192,7 +204,6 @@
     }
   }
 
-  // Marcar pedido como enviado
   async function marcarComoEnviado(id){
     let pedidos = await pegarPedidosFirebase();
     const dataEnvio = new Date().toLocaleString('pt-BR');
@@ -217,16 +228,13 @@
     }
   }
 
-  // Limpar todos os pedidos
   function limparPedidos(){
     if(!confirm("Tem certeza que deseja remover todos os pedidos da Elka 2?")) return;
     db.ref('pedidos').remove();
     alert("🗑️ Todos os pedidos foram removidos!");
   }
 
-  // Atualização em tempo real com som de novos pendentes
   db.ref('pedidos').on('value', carregarPedidos);
-
   window.onload = carregarPedidos;
   </script>
 
