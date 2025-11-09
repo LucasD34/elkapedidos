@@ -11,7 +11,7 @@
     align-items: center;
     gap: 50px;
     margin: 10px 15px;
-    background-color: #ffffff; /* fundo branco */
+    background-color: #ffffff;
     justify-content: flex-start;
   }
 
@@ -21,88 +21,141 @@
     border-radius: 8px;
   }
 
-  /* ====== LAYOUT ====== */
-  body { font-family: Arial,sans-serif; background:#ffffff; margin:0; padding:0; }
-  header { background:#1e3d59; color:white; padding:15px; text-align:center; }
-  table { width:100%; border-collapse:collapse; margin-top:15px; background:white; }
-  th, td { border:1px solid #ccc; padding:8px; text-align:left; }
-  th { background:#eee; }
-  button { background:#1e3d59; color:white; border:none; padding:6px 12px; border-radius:5px; cursor:pointer; }
-  button:hover{background:#2e5b84;}
-  .status-pendente{color:red;font-weight:bold;}
-  .status-enviado{color:green;font-weight:bold;}
-  .separador{background:#dcdcdc;text-align:center;font-weight:bold;padding:5px;}
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    margin: 0;
+    padding: 0;
+  }
 
-  .input-observacao {
-    width: 90%;
-    color: #0033cc;
+  header {
+    background-color: #004d80;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    font-size: 20px;
     font-weight: bold;
-    background-color: #e6ecff;
-    border: 1px solid #3366ff;
-    border-radius: 4px;
-    padding: 4px;
   }
-  .input-observacao:focus {
-    outline: none;
-    border-color: #ff0000;
-    box-shadow: 0 0 5px #ff6666;
-  /* ====== RESPONSIVIDADE DA TABELA ====== */
-@media (max-width: 1000px) {
+
+  .logo-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 40px;
+    background-color: #ffffff;
+    padding: 10px;
+    border-bottom: 2px solid #004d80;
+  }
+
+  .logo-container img {
+    height: 80px;
+    width: auto;
+    border-radius: 8px;
+    transition: transform 0.2s;
+  }
+
+  .logo-container img:hover {
+    transform: scale(1.1);
+  }
+
   table {
-    font-size: 13px;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background-color: #f9f9f9;
   }
 
   th, td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+  }
+
+  th {
+    background-color: #e9f1f8;
+    color: #003355;
+    font-weight: bold;
+  }
+
+  .status-pendente {
+    color: red;
+    font-weight: bold;
+  }
+
+  .status-enviado {
+    color: green;
+    font-weight: bold;
+  }
+
+  .separador {
+    background: #dcdcdc;
+    text-align: center;
+    font-weight: bold;
     padding: 5px;
+    color: #003355;
   }
 
-  .input-observacao {
-    width: 80%;
-    font-size: 12px;
+  .btn {
+    background-color: #004d80;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.2s;
   }
 
-  button {
-    padding: 4px 8px;
-    font-size: 12px;
+  .btn:hover {
+    background-color: #0070c0;
   }
 
-  .logo-container img {
-    height: 70px;
-  }
-}
+  @media (max-width: 768px) {
+    header {
+      font-size: 18px;
+    }
 
-@media (max-width: 600px) {
-  table {
-    font-size: 11px;
-  }
+    .logo-container img {
+      height: 60px;
+    }
 
-  th, td {
-    padding: 3px;
-  }
+    table {
+      font-size: 14px;
+      display: block;
+      overflow-x: auto;
+    }
 
-  .input-observacao {
-    width: 75%;
-    font-size: 11px;
-  }
+    th, td {
+      padding: 6px;
+    }
 
-  button {
-    padding: 3px 6px;
-    font-size: 11px;
-  }
-
-  .logo-container img {
-    height: 50px;
+    .btn {
+      width: 100%;
+      margin: 5px 0;
+    }
   }
 
-  header h1 {
-    font-size: 18px;
-  }
-}
+  @media (max-width: 480px) {
+    .logo-container img {
+      height: 50px;
+    }
 
+    header {
+      font-size: 16px;
+    }
+
+    th, td {
+      font-size: 12px;
+    }
+  }
 </style>
 </head>
 <body>
-  <!-- Logo Elka + outras -->
+
+  <!-- Som de notificação -->
+  <audio id="somNotificacao" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" preload="auto"></audio>
+
   <div class="logo-container">
     <img src="logo-elka.png" alt="Logo Elka">
     <img src="caca.png" alt="Brinquedo Cacá">
@@ -116,6 +169,11 @@
   </div>
 
   <header><h1>Elka 2 - Envio de Pedidos</h1></header>
+
+  <!-- 🔔 Botão para liberar o som -->
+  <div style="text-align:center; margin:10px;">
+    <button id="ativarSom" class="btn" onclick="ativarSom()">🔔 Ativar som de novos pedidos</button>
+  </div>
 
   <div style="padding:20px;">
     <table id="tabelaElka">
@@ -157,6 +215,20 @@
 
   <script>
   let ultimaRenderizacao = "";
+  let primeiroCarregamento = true;
+  let totalPedidosAntes = 0;
+  let somAtivado = false;
+
+  function ativarSom() {
+    const audio = document.getElementById('somNotificacao');
+    audio.play().then(() => {
+      somAtivado = true;
+      alert("🔊 Som ativado! Agora vai tocar quando chegar pedido novo.");
+      document.getElementById('ativarSom').style.display = 'none';
+    }).catch(() => {
+      alert("Clique novamente para liberar o som (bloqueio do navegador).");
+    });
+  }
 
   async function pegarPedidosFirebase(){
     const snapshot = await db.ref('pedidos').get();
@@ -180,6 +252,17 @@
 
     const pendentes = pedidos.filter(p => p.status === 'Pendente');
     const enviados = pedidos.filter(p => p.status === 'Enviado');
+
+    // 🔔 Detectar novos pedidos e tocar som
+    if (!primeiroCarregamento && pendentes.length > totalPedidosAntes && somAtivado) {
+      const audio = document.getElementById("somNotificacao");
+      audio.currentTime = 0;
+      audio.play().catch(() => {
+        console.log("Som bloqueado até ativar manualmente.");
+      });
+    }
+    totalPedidosAntes = pendentes.length;
+    primeiroCarregamento = false;
 
     // BLOCO PENDENTES
     if (pendentes.length > 0) {
@@ -256,7 +339,7 @@
   db.ref('pedidos').on('value', carregarPedidos);
   window.onload = carregarPedidos;
   </script>
-
 </body>
 </html>
+
 
