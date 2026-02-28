@@ -44,4 +44,4 @@ Como o projeto está hospedado no **GitHub Pages**, ele pode ser acessado de qua
 
 ---
 📅 **Desenvolvido para:** Otimização de processos internos na Elka.  
-👤 **Autor:** [LucasD34/GitHub]
+👤 **Autor:** [https://github.com/LucasD34]
